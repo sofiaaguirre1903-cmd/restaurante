@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- PANTALLA WEB (Oculta al imprimir) -->
+<div class="pantalla-web">
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <form action="/mesa/renombrar/{{ mesa['id'] }}" method="POST" style="display: flex; gap: 10px;">
+                <input type="text" name="nombre" value="{{ mesa['nombre'] }}" style="font-size: 22px; font-weight: bold; padding: 5px;" required>
+                <button type="submit" class="btn btn-primary">Guardar Nombre</button>
+            </form>
+            <a href="/mesas" class="btn btn-primary">Volver al Plano</a>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 20px; margin-top: 20px;">
+        <!-- Lista de productos en pantalla -->
+        <div class="card" style="flex: 2;">
+            <h2>Detalle de la Cuenta</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Precio Unit.</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in detalles %}
+                    <tr>
+                        <td>{{ item['producto_nombre'] }}</td>
+                        <td>${{ "%.2f"|format(item['precio']) }}</td>
+                        <td>
+                            <a href="/detalle/cantidad/{{ item['id'] }}/restar" class="btn btn-danger" style="padding: 2px 8px;">-</a>
+                            <b> {{ item['cantidad'] }} </b>
+                            <a href="/detalle/cantidad/{{ item['id'] }}/sumar" class="btn btn-success" style="padding: 2px 8px;">+</a>
+                        </td>
+                        <td><b>${{ "%.2f"|format(item['precio'] * item['cantidad']) }}</b></td>
+                        <td>
+                            <a href="/detalle/eliminar/{{ item['id'] }}" class="btn btn-danger" title="Borrar">🗑️</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5">No hay productos cargados en esta mesa.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h2 style="text-align: right; margin-top: 20px; font-size: 28px; color: #1e293b;">
+                TOTAL: ${{ "%.2f"|format(total) }}
+            </h2>
+
+            <div style="margin-top: 25px; text-align: right;">
+                <form action="/mesa/cerrar/{{ venta['id'] }}" method="POST" id="form-cerrar">
+                    <button type="button" onclick="imprimirTicket()" class="btn btn-success" style="font-size: 18px; padding: 12px 25px;">
+                        🖨️ Cerrar e Imprimir Ticket
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Cargar Producto -->
+        <div class="card" style="flex: 1;">
+            <h3>Agregar Producto</h3>
+            <form action="/venta/agregar" method="POST" style="margin-top: 15px;">
+                <input type="hidden" name="venta_id" value="{{ venta['id'] }}">
+                <input type="hidden" name="mesa_id" value="{{ mesa['id'] }}">
+                
+                <select name="producto_id" style="width: 100%; padding: 12px; margin-bottom: 15px; font-size: 16px;" required>
+                    <option value="">-- Seleccionar Producto --</option>
+                    {% for prod in productos %}
+                        <option value="{{ prod['id'] }}">{{ prod['nombre'] }} (${{ "%.2f"|format(prod['precio']) }})</option>
+                    {% endfor %}
+                </select>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">+ Cargar a la Cuenta</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- FORMATO EXCLUSIVO DEL TICKET A IMPRIMIR (Solo visible al imprimir) -->
+<div id="ticket-pos-impresion">
+    <div style="text-align: center;">================================</div>
+    <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
+        {% for item in detalles %}
+        <tr>
+            <td style="text-align: left; padding: 3px 0;">{{ item['cantidad'] }}x {{ item['producto_nombre'] }}</td>
+            <td style="text-align: right; padding: 3px 0;">${{ "%.2f"|format(item['precio']) }}</td>
+            <td style="text-align: right; padding: 3px 0; font-weight: bold;">${{ "%.2f"|format(item['precio'] * item['cantidad']) }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div style="text-align: center;">================================</div>
+    <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: bold; margin-top: 10px;">
+        <span>TOTAL:</span>
+        <span>${{ "%.2f"|format(total) }}</span>
+    </div>
+</div>
+
+<style>
+    /* Ocultar el ticket en la pantalla normal */
+    #ticket-pos-impresion {
+        display: none;
+    }
+
+    /* REGLAS PARA IMPRESIÓN */
+    @media print {
+        /* Ocultar menú lateral y pantalla web */
+        .sidebar, .pantalla-web {
+            display: none !important;
+        }
+
+        /* Ocultar encabezados e información de página que agrega Chrome */
+        @page {
+            margin: 0;
+        }
+
+        body {
+            background: white !important;
+            margin: 10px !important;
+            padding: 0 !important;
+        }
+
+        /* Mostrar únicamente la sección del ticket */
+        #ticket-pos-impresion {
+            display: block !important;
+            width: 260px; /* Ancho para tiquetera térmica POS */
+            font-family: 'Courier New', Courier, monospace !important;
+            font-size: 13px;
+            color: black;
+        }
+    }
+</style>
+
+<script>
+    function imprimirTicket() {
+        window.print();
+        setTimeout(function() {
+            document.getElementById('form-cerrar').submit();
+        }, 500);
+    }
+</script>
+{% endblock %}

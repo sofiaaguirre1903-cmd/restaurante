@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>📊 Cierre de Caja del Día</h1>
+
+<div style="display: flex; gap: 20px; margin-top: 20px;">
+    <div class="card" style="flex: 1; text-align: center; background-color: #f8fafc;">
+        <h3>Total Recaudado</h3>
+        <p style="font-size: 36px; font-weight: bold; color: #16a34a; margin-top: 10px;">
+            ${{ "%.2f"|format(total_dia) }}
+        </p>
+    </div>
+    <div class="card" style="flex: 1; text-align: center; background-color: #f8fafc;">
+        <h3>Cuentas Cerradas</h3>
+        <p style="font-size: 36px; font-weight: bold; color: #2563eb; margin-top: 10px;">
+            {{ cantidad }}
+        </p>
+    </div>
+</div>
+
+<div class="card" style="margin-top: 30px;">
+    <h3>Detalle de Cuentas del Día</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Mesa</th>
+                <th>Hora Cierre</th>
+                <th>Total</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cuenta in cuentas %}
+            <tr>
+                <td><b>{{ cuenta['mesa_nombre'] }}</b></td>
+                <td>{{ cuenta['fecha_cierre'] }}</td>
+                <td><b>${{ "%.2f"|format(cuenta['total']) }}</b></td>
+                <td>
+                    <a href="/venta/eliminar/{{ cuenta['id'] }}" class="btn btn-danger" onclick="return confirm('¿Eliminar esta cuenta para reajustar el total?');">
+                        🗑️ Eliminar de la caja
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4">No hay ventas registradas para la caja.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

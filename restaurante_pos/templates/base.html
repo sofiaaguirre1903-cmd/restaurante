@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>La Salamanca Bar Botanico</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { display: flex; height: 100vh; background-color: #f4f6f9; }
+        
+        /* Menú Lateral */
+        .sidebar { width: 250px; background-color: #1e293b; color: white; display: flex; flex-direction: column; padding: 20px 0; }
+        .sidebar h2 { text-align: center; font-size: 20px; margin-bottom: 30px; border-bottom: 1px solid #334155; padding-bottom: 15px; }
+        .sidebar a { color: #cbd5e1; text-decoration: none; padding: 15px 25px; display: block; font-size: 16px; transition: 0.3s; }
+        .sidebar a:hover { background-color: #334155; color: white; }
+        
+        /* Contenido Principal */
+        .content { flex: 1; padding: 30px; overflow-y: auto; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .btn { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; display: inline-block; }
+        .btn-primary { background-color: #2563eb; color: white; }
+        .btn-success { background-color: #16a34a; color: white; }
+        .btn-danger { background-color: #dc2626; color: white; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: left; }
+        th { background-color: #f8fafc; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>🍽️ LA SALAMANCA</h2>
+        <a href="/">🏠 Bienvenida</a>
+        <a href="/mesas">📋 Sección Mesas</a>
+        <a href="/productos">➕ Cargar Productos</a>
+        <a href="/cierre">📊 Cálculo del Día</a>
+    </div>
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

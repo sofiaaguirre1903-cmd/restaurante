@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    /* Clases de apoyo para evitar avisos sintácticos en el estilo en línea */
+    .mesa-card {
+        text-align: center;
+        position: relative;
+    }
+    .mesa-ocupada {
+        border-top: 5px solid #ef4444;
+    }
+    .mesa-libre {
+        border-top: 5px solid #22c55e;
+    }
+</style>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h1>🪑 Gestión de Mesas</h1>
+    <form action="/mesa/crear" method="POST">
+        <button type="submit" class="btn btn-success" style="font-size: 16px; padding: 10px 20px;">
+            ➕ Abrir Mesa Nueva
+        </button>
+    </form>
+</div>
+
+<!-- Grilla de Mesas -->
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;">
+    {% for mesa in mesas %}
+    <div class="card mesa-card {% if mesa['estado'] == 'Ocupada' %}mesa-ocupada{% else %}mesa-libre{% endif %}">
+        <h3>{{ mesa['nombre'] }}</h3>
+        <p>Estado: <b>{{ mesa['estado'] }}</b></p>
+        
+        {% if mesa['estado'] == 'Ocupada' %}
+            <a href="/mesa/{{ mesa['id'] }}" class="btn btn-primary" style="width: 100%; margin-top: 10px; display: inline-block;">
+                Ver / Editar
+            </a>
+        {% else %}
+            <a href="/mesa/{{ mesa['id'] }}" class="btn btn-primary" style="width: 100%; margin-top: 10px; display: inline-block;">
+                Abrir Mesa
+            </a>
+        {% endif %}
+
+        {% if mesa['estado'] == 'Libre' %}
+        <a href="/mesa/eliminar/{{ mesa['id'] }}" onclick="return confirm('¿Eliminar esta mesa?');" style="display: block; margin-top: 8px; color: #ef4444; font-size: 12px; text-decoration: none;">
+            🗑️ Eliminar Mesa
+        </a>
+        {% endif %}
+    </div>
+    {% else %}
+    <p>No hay mesas disponibles. Haz clic en "Abrir Mesa Nueva" para agregar la primera.</p>
+    {% endfor %}
+</div>
+
+<hr style="margin: 40px 0; border: 0; border-top: 1px solid #ccc;">
+
+<!-- Historial de Cuentas Cerradas -->
+<h2>📋 Historial de Cuentas Cerradas</h2>
+<div class="card" style="margin-top: 15px;">
+    <table>
+        <thead>
+            <tr>
+                <th>Mesa</th>
+                <th>Fecha / Hora Cierre</th>
+                <th>Total</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for venta in cerradas %}
+            <tr>
+                <td><b>{{ venta['mesa_nombre'] }}</b></td>
+                <td>{{ venta['fecha_cierre'] }}</td>
+                <td><b>${{ "%.2f"|format(venta['total']) }}</b></td>
+                <td>
+                    <a href="/venta/eliminar/{{ venta['id'] }}" class="btn btn-danger" onclick="return confirm('¿Eliminar esta cuenta del historial?');">
+                        🗑️ Eliminar
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4">No hay cuentas cerradas registradas.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

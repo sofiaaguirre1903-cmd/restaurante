@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="
+    height: 85vh; 
+    border-radius: 15px; 
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('/static/fondo.png') center/cover no-repeat;
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    color: white; 
+    text-align: center;
+    padding: 20px;">
+    
+    <h1 style="font-size: 48px; margin-bottom: 15px;">¡Bienvenido a La Salamanca!</h1>
+    <p style="font-size: 20px; max-width: 600px;">Sistema completo de gestión de comandas, mesas y control diario de cobros.</p>
+    <a href="/mesas" class="btn btn-primary" style="margin-top: 25px; font-size: 18px; padding: 12px 30px;">Ir a Gestión de Mesas</a>
+</div>
+{% endblock %}
